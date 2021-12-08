@@ -35,14 +35,14 @@ rm -rf "${TARGET}"
 mkdir -p "${TARGET}/${PKGDIR}"
 for L in ${BOOST_LIBS}
 do
-        LL=$(echo "${L}" | tr "-" "_")
-        OLD_PKG_NAME="libboost-${L}${UPSTREAM_OLD_VERS}"
-        OLD_PKG_FULL_NAME="${OLD_PKG_NAME}-${UPSTREAM_OLD_VERS}-${DEBIAN_REVISION}"
-        OLD_LIB_NAME="libboost_${LL}.so.${UPSTREAM_OLD_VERS}"
-        NEW_PKG_NAME="libboost-${L}${UPSTREAM_NEW_VERS}"
-        NEW_LIB_NAME="libboost_${LL}.so.${UPSTREAM_NEW_VERS}"
-        mkdir -p "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN"
-        cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/control" << EOF
+    LL=$(echo "${L}" | tr "-" "_")
+    OLD_PKG_NAME="libboost-${L}${UPSTREAM_OLD_VERS}"
+    OLD_PKG_FULL_NAME="${OLD_PKG_NAME}-${UPSTREAM_OLD_VERS}-${DEBIAN_REVISION}"
+    OLD_LIB_NAME="libboost_${LL}.so.${UPSTREAM_OLD_VERS}"
+    NEW_PKG_NAME="libboost-${L}${UPSTREAM_NEW_VERS}"
+    NEW_LIB_NAME="libboost_${LL}.so.${UPSTREAM_NEW_VERS}"
+    mkdir -p "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN"
+    cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/control" << EOF
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
@@ -53,20 +53,20 @@ Maintainer: Dario Nicodemi
 Depends: ${NEW_PKG_NAME} (>= ${UPSTREAM_NEW_VERS})
 Description: compat symlink ${UPSTREAM_OLD_VERS} -> ${UPSTREAM_NEW_VERS}
 EOF
-        cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/postinst" << EOF
+    cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/postinst" << EOF
 #!/bin/sh
 (cd "/lib/\$(dpkg-architecture -qDEB_HOST_MULTIARCH)" && ln -sf "${NEW_LIB_NAME}" "${OLD_LIB_NAME}")
 EOF
-        chmod 0755 "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/postinst"
-        cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/prerm" << EOF
+    chmod 0755 "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/postinst"
+    cat > "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/prerm" << EOF
 #!/bin/sh
 (cd "/lib/\$(dpkg-architecture -qDEB_HOST_MULTIARCH)" && rm "${OLD_LIB_NAME}")
 EOF
-        chmod 0755 "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/prerm"
-        dpkg-deb --build "${TARGET}/${OLD_PKG_FULL_NAME}" "${TARGET}/${PKGDIR}"
+    chmod 0755 "${TARGET}/${OLD_PKG_FULL_NAME}/DEBIAN/prerm"
+    dpkg-deb --build "${TARGET}/${OLD_PKG_FULL_NAME}" "${TARGET}/${PKGDIR}"
 done
 
 (
-        cd ${TARGET}
-        tar czvf "${PKGDIR}.tar.gz" "${PKGDIR}"
+    cd ${TARGET}
+    tar czvf "${PKGDIR}.tar.gz" "${PKGDIR}"
 )
